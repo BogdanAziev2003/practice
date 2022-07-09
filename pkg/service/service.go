@@ -9,7 +9,8 @@ type Service struct {
 }
 
 type Translator interface {
-	Translate(string) ([]string, error)
+	TranslateWord(string) ([]string, error)
+	GetAllWords() ([]string, error)
 }
 
 func NewService(repos *repository.Repository) *Service {

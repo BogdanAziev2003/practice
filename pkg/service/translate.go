@@ -16,7 +16,7 @@ func NewTranslateService(repo repository.Translator) *TranslateService {
 	}
 }
 
-func (ts *TranslateService) Translate(word string) ([]string, error) {
+func (ts *TranslateService) TranslateWord(word string) ([]string, error) {
 
 	allWords, err := ts.repo.GetWords()
 	if err != nil {
@@ -27,12 +27,12 @@ func (ts *TranslateService) Translate(word string) ([]string, error) {
 	return translate, nil
 }
 
-func HtmTranslate(word string) ([]string, error) {
-	return make([]string, 0), nil
-}
-
-func PdfTranslate(word string) ([]string, error) {
-	return make([]string, 0), nil
+func (ts *TranslateService) GetAllWords() ([]string, error) {
+	allWords, err := ts.repo.GetWords()
+	if err != nil {
+		return nil, err
+	}
+	return SplitTextToArray(allWords), nil
 }
 
 func SplitTextToArray(text string) []string {
@@ -45,28 +45,26 @@ func SplitTextToArray(text string) []string {
 	for i := 0; i < len(splitText); i++ {
 		if strings.Contains(splitText[i], "style=\"font-weight:bold;\"") {
 			index++
-			slice = append(slice, splitText[i])
+			slice = append(slice, "<p>"+splitText[i])
 			continue
 		}
-		slice[index] += splitText[i]
+		slice[index] += "<p>" + splitText[i]
 	}
 	return slice
 }
 
 func GetSplitTranslate(str string) []string {
-	res := strings.Split(str, "</p>")
 
-	return res
+	return strings.Split(str, "</p>")
 }
 
 func FindWord(word string, str string) []string {
 	slice := SplitTextToArray(str)
-
 	res := make([]string, 0)
 	for i := 0; i < len(slice); i++ {
-		split := GetSplitTranslate(slice[i])
+		split := strings.Split(slice[i], "</p>") //GetSplitTranslate(slice[i])
 		if strings.Contains(split[0], word) {
-			res = append(res, strings.ReplaceAll(slice[i], "</p>", ""))
+			res = append(res, slice[i]) //strings.ReplaceAll(slice[i], `'`, ""))
 		}
 	}
 

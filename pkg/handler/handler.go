@@ -13,7 +13,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	router := gin.New()
 
-	router.GET("/get-trnslate", h.getTranslate)
+	api := router.Group("/api")
+	{
+		api.GET("/get-translate", h.getTranslate)
+		api.GET("/get-all-words", h.getAllWord)
+	}
 
 	return router
 }
